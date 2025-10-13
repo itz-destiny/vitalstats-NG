@@ -38,7 +38,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <SidebarProvider>
-      <div id="sidebar-container" className="print:hidden">
+        <SidebarInset>{children}</SidebarInset>
         <Sidebar>
           <SidebarHeader>
             <div className="flex items-center gap-2">
@@ -115,8 +115,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
           </SidebarFooter>
         </Sidebar>
-      </div>
-      <SidebarInset>{children}</SidebarInset>
     </SidebarProvider>
   );
 }

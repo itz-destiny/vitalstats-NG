@@ -19,8 +19,9 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
   return (
     <SidebarContext.Provider value={{ isCollapsed, setIsCollapsed, isOpen, setIsOpen, isMobile }}>
       <div className="flex min-h-screen">
+        <div className="flex-1">{/* This will hold the main content */}</div>
         {!isMobile && (
-          <div className="relative w-auto border-r">
+          <div className="relative w-auto border-l">
             <div data-collapsed={isCollapsed} className={cn(sidebar(), "transition-all duration-300 ease-in-out")}>
               {children}
             </div>
@@ -28,7 +29,7 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
         )}
         {isMobile && (
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetContent side="left" className="p-0 w-72">
+                <SheetContent side="right" className="p-0 w-72">
                   <div data-collapsed={false} className={sidebar()}>
                     {children}
                   </div>
@@ -101,6 +102,18 @@ export const SidebarFooter = React.forwardRef<HTMLDivElement, React.HTMLAttribut
 SidebarFooter.displayName = "SidebarFooter";
 
 export const SidebarInset = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => {
-    return <main ref={ref} className={cn("flex-1 p-4 sm:p-6 lg:p-8", className)} {...props} />;
+    const { children } = props;
+    const sidebarContext = useSidebarContext();
+    const mainContent = <main className={cn("flex-1 p-4 sm:p-6 lg:p-8", className)} {...props} ref={ref} />;
+
+    if (sidebarContext.isMobile) {
+        return mainContent;
+    }
+
+    return (
+      <div className="flex flex-1">
+        {mainContent}
+      </div>
+    );
 });
 SidebarInset.displayName = "SidebarInset";

@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Label }s "@/components/ui/label"
+import { Label } "@/components/ui/label"
 import {
   Select,
   SelectContent,

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -33,7 +34,7 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 
 
 const birthFormSchema = z.object({
@@ -168,7 +169,7 @@ export default function DataEntryForm() {
                         )}
                     />
                     </div>
-                    <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">Submit Birth Record</Button>
+                    <Button type="submit">Submit Birth Record</Button>
                 </form>
                 </Form>
             </CardContent>
@@ -251,7 +252,7 @@ export default function DataEntryForm() {
                             )}
                         />
                         </div>
-                        <Button type="submit" className="bg-accent text-accent-foreground hover:bg-accent/90">Submit Death Record</Button>
+                        <Button type="submit">Submit Death Record</Button>
                     </form>
                 </Form>
             </CardContent>

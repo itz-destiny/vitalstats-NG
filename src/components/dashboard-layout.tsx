@@ -16,7 +16,6 @@ import {
   SidebarNavHeaderTitle,
   SidebarNavLink,
   SidebarFooter,
-  SidebarInset,
 } from "@/components/ui/sidebar-new";
 import {
   DropdownMenu,
@@ -26,95 +25,137 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/icons";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-import { LayoutGrid, FilePlus2, ChevronDown, LogOut, Settings, FileText } from "lucide-react";
+import { LayoutGrid, FilePlus2, ChevronDown, LogOut, Settings, FileText, Menu, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const userAvatar = PlaceHolderImages.find(image => image.id === 'user-avatar');
 
   return (
-    <SidebarProvider>
-        <SidebarInset>{children}</SidebarInset>
-        <Sidebar>
-          <SidebarHeader>
-            <div className="flex items-center gap-2">
-              <Logo className="text-primary" />
-              <h1 className="text-xl font-semibold font-headline">VitalStats NG</h1>
-            </div>
-          </SidebarHeader>
-          <SidebarBody>
-            <SidebarNav>
-              <SidebarNavHeader>
-                <SidebarNavHeaderTitle>Navigation</SidebarNavHeaderTitle>
-              </SidebarNavHeader>
-              <SidebarNavLink
+    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="hidden border-r bg-muted/40 md:block">
+        <div className="flex h-full max-h-screen flex-col gap-2">
+          <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+            <Link href="/" className="flex items-center gap-2 font-semibold">
+              <Logo className="h-6 w-6 text-primary" />
+              <span className="">VitalStats NG</span>
+            </Link>
+          </div>
+          <div className="flex-1">
+            <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              <Link
                 href="/"
-                active={pathname === "/"}
+                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", pathname === "/" && "text-primary bg-muted")}
               >
-                <LayoutGrid size={16} />
+                <LayoutGrid className="h-4 w-4" />
                 Dashboard
-              </SidebarNavLink>
-              <SidebarNavLink
+              </Link>
+              <Link
                 href="/data-entry"
-                active={pathname === "/data-entry"}
+                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", pathname === "/data-entry" && "text-primary bg-muted")}
               >
-                <FilePlus2 size={16} />
+                <FilePlus2 className="h-4 w-4" />
                 Data Entry
-              </SidebarNavLink>
-              <SidebarNavLink
+              </Link>
+              <Link
                 href="/reports"
-                active={pathname === "/reports"}
+                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", pathname === "/reports" && "text-primary bg-muted")}
               >
-                <FileText size={16} />
+                <FileText className="h-4 w-4" />
                 Reports
-              </SidebarNavLink>
-            </SidebarNav>
-          </SidebarBody>
-          <SidebarFooter>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="w-full justify-start px-2">
-                  <div className="flex justify-between items-center w-full">
-                    <div className="flex gap-2 items-center truncate">
-                      <Avatar className="h-8 w-8">
-                        {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt="User Avatar" />}
-                        <AvatarFallback>AU</AvatarFallback>
-                      </Avatar>
-                      <div className="truncate text-left">
-                        <p className="font-semibold truncate">Admin User</p>
-                      </div>
-                    </div>
-                    <ChevronDown size={16} className="text-muted-foreground" />
-                  </div>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">Admin User</p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      admin@vitalstats.ng
-                    </p>
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarFooter>
-        </Sidebar>
-    </SidebarProvider>
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col">
+        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                className="shrink-0 md:hidden"
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle navigation menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left" className="flex flex-col">
+              <nav className="grid gap-2 text-lg font-medium">
+                <Link
+                  href="#"
+                  className="flex items-center gap-2 text-lg font-semibold"
+                >
+                  <Logo className="h-6 w-6 text-primary" />
+                  <span className="sr-only">VitalStats NG</span>
+                </Link>
+                <Link
+                  href="/"
+                  className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "text-foreground bg-muted")}
+                >
+                  <LayoutGrid className="h-5 w-5" />
+                  Dashboard
+                </Link>
+                <Link
+                  href="/data-entry"
+                   className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/data-entry" && "text-foreground bg-muted")}
+                >
+                  <FilePlus2 className="h-5 w-5" />
+                  Data Entry
+                </Link>
+                <Link
+                  href="/reports"
+                  className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/reports" && "text-foreground bg-muted")}
+                >
+                  <FileText className="h-5 w-5" />
+                  Reports
+                </Link>
+              </nav>
+            </SheetContent>
+          </Sheet>
+          <div className="w-full flex-1">
+            <form>
+              <div className="relative">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search..."
+                  className="w-full appearance-none bg-background pl-8 shadow-none md:w-2/3 lg:w-1/3"
+                />
+              </div>
+            </form>
+          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon" className="rounded-full">
+                 <Avatar className="h-8 w-8">
+                    {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt="User Avatar" />}
+                    <AvatarFallback>AU</AvatarFallback>
+                  </Avatar>
+                <span className="sr-only">Toggle user menu</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Logout</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6 bg-muted/40">
+          {children}
+        </main>
+      </div>
+    </div>
   );
 }

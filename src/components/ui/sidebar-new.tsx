@@ -1,3 +1,4 @@
+
 "use client"
 import * as React from "react"
 import Link from "next/link"
@@ -44,7 +45,7 @@ export const Sidebar = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTM
     )
   }
 
-  return <div ref={ref} data-collapsed={isCollapsed} className={cn(sidebar({ className }), "border-r")} {...props} />;
+  return <div ref={ref} data-collapsed={isCollapsed} className={cn(sidebar({ className }))} {...props} />;
 });
 Sidebar.displayName = "Sidebar";
 
@@ -79,9 +80,9 @@ export const SidebarNavHeaderTitle = React.forwardRef<HTMLSpanElement, React.HTM
 SidebarNavHeaderTitle.displayName = "SidebarNavHeaderTitle";
 
 export const SidebarNavLink = React.forwardRef<HTMLAnchorElement, { href: string; active?: boolean } & React.AnchorHTMLAttributes<HTMLAnchorElement>>(({ className, children, active, ...props }, ref) => {
-  const { isCollapsed } = useSidebarContext();
+  const { isCollapsed, setIsOpen } = useSidebarContext();
   return (
-    <Link ref={ref} className={cn("flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", active && "bg-sidebar-accent text-sidebar-accent-foreground", isCollapsed && "justify-center", className)} {...props}>
+    <Link onClick={() => setIsOpen(false)} ref={ref} className={cn("flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", active && "bg-sidebar-accent text-sidebar-accent-foreground", isCollapsed && "justify-center", className)} {...props}>
       {children}
        <span className={cn("flex-1", isCollapsed && "hidden")}>{ (children as any)[1] || ''}</span>
     </Link>
@@ -95,10 +96,21 @@ export const SidebarFooter = React.forwardRef<HTMLDivElement, React.HTMLAttribut
 SidebarFooter.displayName = "SidebarFooter";
 
 export const SidebarInset = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => {
+    const { isMobile } = useSidebarContext();
+    if (isMobile) {
+        return (
+            <div className="flex min-h-screen w-full flex-col bg-muted/40">
+                <main ref={ref} className={cn("flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8", className)}>
+                  {props.children}
+                </main>
+            </div>
+        )
+    }
+
     return (
-      <div className="flex min-h-screen">
+      <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
         <Sidebar>{props.children}</Sidebar>
-        <main className={cn("flex-1 p-4 sm:p-6 lg:p-8", className)} ref={ref} />
+        <main className={cn("flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6", className)} ref={ref} />
       </div>
     );
 });

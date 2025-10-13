@@ -71,6 +71,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <FileText className="h-4 w-4" />
                 Reports
               </Link>
+              <Link
+                href="/settings"
+                className={cn("flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary", pathname === "/settings" && "text-primary bg-muted")}
+              >
+                <Settings className="h-4 w-4" />
+                Settings
+              </Link>
             </nav>
           </div>
         </div>
@@ -118,6 +125,13 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   <FileText className="h-5 w-5" />
                   Reports
                 </Link>
+                <Link
+                  href="/settings"
+                  className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/settings" && "text-foreground bg-muted")}
+                >
+                  <Settings className="h-5 w-5" />
+                  Settings
+                </Link>
               </nav>
             </SheetContent>
           </Sheet>
@@ -146,7 +160,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/settings">Settings</Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Logout</DropdownMenuItem>
             </DropdownMenuContent>

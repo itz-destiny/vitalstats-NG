@@ -1,22 +1,10 @@
-
 "use client";
 
 import * as React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarHeader,
-  SidebarBody,
-  SidebarNav,
-  SidebarNavHeader,
-  SidebarNavHeaderTitle,
-  SidebarNavLink,
-  SidebarFooter,
-} from "@/components/ui/sidebar-new";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,17 +21,50 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 import { LayoutGrid, FilePlus2, ChevronDown, LogOut, Settings, FileText, Menu, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { useAuth, useUser } from "@/firebase";
+import { signOut } from "firebase/auth";
+import { useToast } from "@/hooks/use-toast";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const auth = useAuth();
+  const { user } = useUser();
+  const { toast } = useToast();
   const userAvatar = PlaceHolderImages.find(image => image.id === 'user-avatar');
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "An error occurred during logout.",
+      });
+    }
+  };
+  
+  const getAvatarFallback = () => {
+    if (user && user.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return "AU";
+  }
+
 
   return (
     <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-muted/40 md:block">
+      <div className="hidden border-r bg-card md:block">
         <div className="flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Link href="/" className="flex items-center gap-2 font-semibold">
+            <Link href="/" className="flex items-center gap-2 font-semibold text-foreground">
               <Logo className="h-6 w-6 text-primary" />
               <span className="">VitalStats NG</span>
             </Link>
@@ -83,7 +104,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+        <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:h-[60px] lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -95,15 +116,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <span className="sr-only">Toggle navigation menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
-                <Link
-                  href="#"
-                  className="flex items-center gap-2 text-lg font-semibold"
-                >
+            <SheetContent side="left" className="flex flex-col p-0">
+              <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+                <Link href="/" className="flex items-center gap-2 font-semibold text-foreground">
                   <Logo className="h-6 w-6 text-primary" />
-                  <span className="sr-only">VitalStats NG</span>
+                  <span className="">VitalStats NG</span>
                 </Link>
+              </div>
+              <nav className="grid gap-2 p-4 text-lg font-medium">
                 <Link
                   href="/"
                   className={cn("mx-[-0.65rem] flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground", pathname === "/" && "text-foreground bg-muted")}
@@ -152,7 +172,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               <Button variant="secondary" size="icon" className="rounded-full">
                  <Avatar className="h-8 w-8">
                     {userAvatar && <AvatarImage src={userAvatar.imageUrl} alt="User Avatar" />}
-                    <AvatarFallback>AU</AvatarFallback>
+                    <AvatarFallback>{getAvatarFallback()}</AvatarFallback>
                   </Avatar>
                 <span className="sr-only">Toggle user menu</span>
               </Button>
@@ -164,7 +184,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <Link href="/settings">Settings</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Logout</DropdownMenuItem>
+              <DropdownMenuItem onClick={handleLogout}>
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Logout</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </header>

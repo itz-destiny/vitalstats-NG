@@ -1,6 +1,10 @@
-import { SidebarProvider } from "@/components/ui/sidebar-new";
+import { AuthProvider } from "@/components/auth-provider";
 import { DashboardLayout } from "@/components/dashboard-layout";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  return (<SidebarProvider><DashboardLayout>{children}</DashboardLayout></SidebarProvider>);
+  return (
+    <AuthProvider>
+      <DashboardLayout>{children}</DashboardLayout>
+    </AuthProvider>
+  );
 }

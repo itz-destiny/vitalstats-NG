@@ -1,4 +1,3 @@
-
 "use client"
 
 import { Button } from "@/components/ui/button"
@@ -18,8 +17,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useToast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
+  const { toast } = useToast()
+
+  const handleSave = () => {
+    toast({
+      title: "Settings Saved",
+      description: "Your appearance settings have been updated.",
+    })
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center">
@@ -50,7 +59,7 @@ export default function SettingsPage() {
             </form>
           </CardContent>
           <CardFooter className="border-t px-6 py-4">
-            <Button>Save</Button>
+            <Button onClick={handleSave}>Save</Button>
           </CardFooter>
         </Card>
     </div>

@@ -9,8 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StatsCard } from "@/components/stats-card";
-import { Printer, Baby, Skull, TrendingUp, Scaling, Menu } from "lucide-react";
-import { useSidebarContext } from "@/components/ui/sidebar-new";
+import { Printer, Baby, Skull, TrendingUp, Scaling } from "lucide-react";
 
 type ReportData = {
   summary: {
@@ -31,7 +30,6 @@ type ReportData = {
 const years = Array.from(new Set(vitalData.map(d => d.year))).sort((a, b) => b - a);
 
 export default function ReportsPage() {
-  const { isMobile, setIsOpen } = useSidebarContext();
   const [selectedState, setSelectedState] = useState<string>("all");
   const [selectedYear, setSelectedYear] = useState<number>(years[0]);
   const [report, setReport] = useState<ReportData | null>(null);
@@ -104,7 +102,6 @@ export default function ReportsPage() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden">
         <div>
-          {isMobile && <Button variant="ghost" size="icon" onClick={() => setIsOpen(true)} className="sm:hidden mb-2"><Menu /></Button>}
           <h1 className="text-3xl font-bold font-headline">Generate Reports</h1>
           <p className="text-muted-foreground">Create detailed printable reports for specific regions and years.</p>
         </div>

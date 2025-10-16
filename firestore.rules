@@ -1,0 +1,104 @@
+/**
+ * @fileoverview Firestore Security Rules for VitalStats NG.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model. Each user can only access their own data.
+ *
+ * Data Structure:
+ * - /users/{userId}: Stores user profile information. The {userId} must match the authenticated user's UID.
+ * - /users/{userId}/birthRecords/{birthRecordId}: Stores birth records associated with a specific user.
+ * - /users/{userId}/deathRecords/{deathRecordId}: Stores death records associated with a specific user.
+ *
+ * Key Security Decisions:
+ * - Users can only read and write their own profile data.
+ * - Users can only read and write birth and death records associated with their account.
+ * - No listing of all users is allowed.
+ *
+ * Denormalization for Authorization:
+ * The data model already correctly denormalizes the userId onto all child documents
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Controls access to user profile documents.
+     * @path /users/{userId}
+     * @allow (create) - User with UID 'user_abc' can create their own profile document at /users/user_abc if the document id also equals 'user_abc'.
+     * @allow (get, update, delete) - User with UID 'user_abc' can get, update, and delete their own profile document at /users/user_abc.
+     * @deny (create) - User with UID 'user_def' cannot create a document at /users/user_abc.
+     * @deny (get, update, delete) - User with UID 'user_def' cannot get, update or delete the document at /users/user_abc.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to birth records for a specific user.
+     * @path /users/{userId}/birthRecords/{birthRecordId}
+     * @allow (create, get, list, update, delete) - User with UID 'user_abc' can manage their own birth records under /users/user_abc/birthRecords/{birthRecordId}.
+     * @deny (create, get, list, update, delete) - User with UID 'user_def' cannot manage birth records under /users/user_abc/birthRecords/{birthRecordId}.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/birthRecords/{birthRecordId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Controls access to death records for a specific user.
+     * @path /users/{userId}/deathRecords/{deathRecordId}
+     * @allow (create, get, list, update, delete) - User with UID 'user_abc' can manage their own death records under /users/user_abc/deathRecords/{deathRecordId}.
+     * @deny (create, get, list, update, delete) - User with UID 'user_def' cannot manage death records under /users/user_abc/deathRecords/{deathRecordId}.
+     * @principle Enforces document ownership for all operations.
+     */
+    match /users/{userId}/deathRecords/{deathRecordId} {
+      function isSignedIn() {
+        return request.auth != null;
+      }
+
+      function isOwner(userId) {
+        return request.auth.uid == userId;
+      }
+
+      function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+      }
+      allow get: if isOwner(userId);
+      allow list: if isOwner(userId);
+      allow create: if isSignedIn() && isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

@@ -1,0 +1,195 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user account within the VitalStats NG system.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the User entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "registrationDate": {
+          "type": "string",
+          "description": "The date and time when the user registered.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "registrationDate"
+      ]
+    },
+    "BirthRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "BirthRecord",
+      "type": "object",
+      "description": "Represents a record of a birth event in Nigeria.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the BirthRecord entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who submitted the birth record. (Relationship: User 1:N BirthRecord)"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "description": "The date of the birth event.",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string",
+          "description": "The state in Nigeria where the birth occurred."
+        },
+        "lga": {
+          "type": "string",
+          "description": "The Local Government Area where the birth occurred."
+        },
+        "gender": {
+          "type": "string",
+          "description": "The gender of the baby (Male/Female)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "dateOfBirth",
+        "state",
+        "lga",
+        "gender"
+      ]
+    },
+    "DeathRecord": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DeathRecord",
+      "type": "object",
+      "description": "Represents a record of a death event in Nigeria.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the DeathRecord entity."
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to the User who submitted the death record. (Relationship: User 1:N DeathRecord)"
+        },
+        "dateOfDeath": {
+          "type": "string",
+          "description": "The date of the death event.",
+          "format": "date-time"
+        },
+        "state": {
+          "type": "string",
+          "description": "The state in Nigeria where the death occurred."
+        },
+        "lga": {
+          "type": "string",
+          "description": "The Local Government Area where the death occurred."
+        },
+        "age": {
+          "type": "number",
+          "description": "The age of the deceased at the time of death."
+        },
+        "causeOfDeath": {
+          "type": "string",
+          "description": "The reported cause of death."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "dateOfDeath",
+        "state",
+        "lga",
+        "age",
+        "causeOfDeath"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profile information. Document ID matches the Firebase Auth UID. Path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/birthRecords/{birthRecordId}",
+        "definition": {
+          "entityName": "BirthRecord",
+          "schema": {
+            "$ref": "#/backend/entities/BirthRecord"
+          },
+          "description": "Stores birth records associated with a specific user. Path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "birthRecordId",
+              "description": "The unique ID of the birth record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/deathRecords/{deathRecordId}",
+        "definition": {
+          "entityName": "DeathRecord",
+          "schema": {
+            "$ref": "#/backend/entities/DeathRecord"
+          },
+          "description": "Stores death records associated with a specific user. Path-based ownership.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The Firebase Auth UID of the user."
+            },
+            {
+              "name": "deathRecordId",
+              "description": "The unique ID of the death record."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to manage user data, birth records, and death records for the VitalStats NG application. It emphasizes authorization independence and supports secure listing operations. User data is stored in a dedicated collection (`users`) with document IDs matching the Firebase Auth UIDs. Birth and death records are stored in subcollections under each user's document to establish ownership. This structure leverages path-based ownership for security, ensuring only the authenticated user can access their own records. No denormalization is necessary because the ownership is already directly represented through the path structure."
+  }
+}

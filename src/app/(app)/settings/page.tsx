@@ -1,5 +1,7 @@
 "use client"
 
+import { useTheme } from "next-themes"
+
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -20,6 +22,7 @@ import {
 import { useToast } from "@/hooks/use-toast"
 
 export default function SettingsPage() {
+  const { theme, setTheme } = useTheme()
   const { toast } = useToast()
 
   const handleSave = () => {
@@ -45,7 +48,7 @@ export default function SettingsPage() {
             <form className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="theme">Theme</Label>
-                 <Select defaultValue="system">
+                 <Select value={theme} onValueChange={setTheme}>
                     <SelectTrigger id="theme" className="w-full sm:w-[240px]">
                       <SelectValue placeholder="Select theme" />
                     </SelectTrigger>
